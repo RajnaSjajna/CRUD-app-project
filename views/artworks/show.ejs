@@ -1,0 +1,16 @@
+<h2><%= artwork.title %></h2>
+<p>Artist: <%= artwork.artist %></p>
+
+
+<% if (artwork.imagePath) { %>
+  <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>" width="400">
+<% } %>
+
+<% if (user && user.id === artwork.ownerId) { %>
+  <a href="/artworks/<%= artwork.id %>/edit">Edit</a>
+  <form method="POST" action="/artworks/<%= artwork.id %>?_method=DELETE" style="display:inline;">
+    <button type="submit">Delete</button>
+  </form>
+<% } %>
+
+<a href="/artworks">Go Back</a>

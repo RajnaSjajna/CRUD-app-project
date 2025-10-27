@@ -1,0 +1,6 @@
+<h2>Edit Artwork</h2>
+<form method="POST" action="/artworks/<%= artwork.id %>?_method=PUT">
+  <input type="text" name="title" value="<%= artwork.title %>">
+  <input type="text" name="artist" value="<%= artwork.artist %>">
+  <button type="submit">Save</button>
+</form>

@@ -1,0 +1,71 @@
+body { font-family: Arial, sans-serif; padding: 20px; }
+nav a { margin-right: 10px; }
+
+
+/* === FULLSCREEN SLIDER === */
+.slider {
+  width: 100%;
+  height: 100vh;
+  position: relative; /* važno za apsolutno pozicionirane slide-ove */
+  overflow: hidden;
+}
+
+.slides {
+  width: 100%;
+  height: 100%;
+  position: relative; /* parent za apsolutne .slide */
+}
+
+.slide {
+  position: absolute;      /* apsolutno pozicioniranje unutar .slides */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* centriranje */
+  display: none;           /* skriveno po defaultu */
+}
+
+.slide.active {
+  display: block;          /* samo aktivna slika je vidljiva */
+}
+
+.slide img {
+  max-width: 80vw;        /* 80% širine ekrana */
+  max-height: 80vh;       /* 80% visine ekrana */
+  object-fit: cover;      /* popunjava okvir bez deformacije */
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Dugmad za navigaciju */
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.prev:hover, .next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.prev {
+  left: 20px;
+}
+.next {
+  right: 20px;
+}
+/* Reset default margina i paddinga */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* sprečava horizontalni scroll */
+  height: 100%;
+  width: 100%;
+}
