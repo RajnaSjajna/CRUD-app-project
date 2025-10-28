@@ -9,12 +9,16 @@ const app = express();
 const artworkRoutes = require('./controllers/artworks');
 const authRoutes = require('./controllers/auth');
 
-// Middleware
+// Middleware-// omogućava public folder za slike i CSS
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(express.static('public'));
+
 app.use(session({ secret: 'fineart-secret', resave: false, saveUninitialized: false }));
 
-// Set view engine
+// Set view engine-// postavi view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -26,6 +30,9 @@ app.use(passUserToView);
 app.use('/artworks', artworkRoutes);
 app.use('/auth', authRoutes);
 
+
+
+// ruta za početnu stranicu
 app.get('/', (req, res) => {
   res.render('index');
 });
