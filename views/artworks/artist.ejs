@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= artist %> | FineArt Gallery</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      box-sizing: border-box;
+    }
+
+    .navbar a,
+    .navbar button {
+      color: #fff;
+      background: rgba(234, 232, 232, 0.667);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .slider {
+      position: relative;
+      margin-top: 80px;
+      width: 90%;
+      max-width: 900px;
+      height: 70vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .slide img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .prev,
+    .next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      font-size: 2rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 50%;
+      z-index: 5;
+      transition: background 0.3s;
+    }
+
+    .prev:hover,
+    .next:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .prev {
+      left: 20px;
+    }
+
+    .next {
+      right: 20px;
+    }
+
+    h2 {
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>FineArt Gallery</h1>
+    <div class="nav-buttons">
+      <a href="/artworks">⬅ Back to Artworks</a>
+      <% if (user) { %>
+        <form action="/auth/sign-out" method="POST" style="display:inline;">
+          <button type="submit">🚪 Sign Out</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/sign-in">🔑 Sign In</a>
+      <% } %>
+    </div>
+  </nav>
+
+  <h2>Artworks by <%= artist %></h2>
+
+  <!-- Slider sa radovima -->
+  <div class="slider">
+    <% if (artworks.length > 0) { %>
+      <% artworks.forEach((artwork, index) => { %>
+        <div class="slide <%= index === 0 ? 'active' : '' %>">
+          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+        </div>
+      <% }) %>
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    <% } else { %>
+      <p>No artworks found for this artist.</p>
+    <% } %>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+    function showSlide(index) {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    }
+    document.querySelector('.next').addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    });
+    document.querySelector('.prev').addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    });
+  </script>
+
+</body>
+</html>

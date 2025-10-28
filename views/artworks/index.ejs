@@ -7,202 +7,83 @@
   <title>FineArt Gallery</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    /* Navbar */
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 20;
-      box-sizing: border-box;
-    }
-
-    .navbar a,
-    .navbar button {
-      color: rgb(255, 252, 252);
-      background: rgba(234, 232, 232, 0.667);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s;
-      white-space: nowrap;
-    }
-
-    .navbar a:hover,
-    .navbar button:hover {
-      background: rgba(255, 255, 255, 0.4);
-    }
-
-    @media (max-width: 600px) {
-      .navbar {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-    }
-
-    /* Slider */
-    .slider {
-
-      position: relative;
-      margin-top: 70px;
-      /* ostavi prostor za navbar */
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: calc(80vh);
-      /* 80% visine ekrana */
-      overflow: hidden;
-
-    }
-
-    .slide {
-      display: none;
-      /* sve skrivene po defaultu */
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .slide.active {
-      display: block;
-      /* samo aktivna slika se vidi */
-    }
-
-    .slide img {
-      max-width: 80vw;
-      max-height: 80vh;
-      object-fit: cover;
-      display: block;
-      margin: 0 auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Navigation buttons (optional) */
-    .prev,
-    .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      font-size: 2rem;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 50%;
-      z-index: 5;
-      transition: background 0.3s;
-    }
-
-    .prev:hover,
-    .next:hover {
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .prev {
-      left: 20px;
-    }
-
-    .next {
-      right: 20px;
-    }
-
-    /* Content below slider */
-    .content {
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-
-    ul {
+    /* ... ovdje možeš zadržati postojeći CSS za navbar, slider i gallery ... */
+    .artist-list ul {
       list-style: none;
       padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
     }
 
-    ul li {
-      margin: 0.5rem 0;
-    }
-
-    ul a {
+    .artist-list li a {
       text-decoration: none;
-      color: #333;
-      font-weight: 600;
+      padding: 0.3rem 0.6rem;
+      background: #333;
+      color: #fff;
+      border-radius: 5px;
+      transition: background 0.3s;
     }
 
-    .gallery img {
-      display: block;
-      margin: 1rem auto;
-      max-width: 80%;
+    .artist-list li a:hover {
+      background: #555;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <h1>FineArt Gallery</h1>
     <div class="nav-buttons">
-
       <a href="/">🏠 Home</a>
       <% if (user) { %>
         <form action="/auth/sign-out" method="POST" style="display:inline;">
           <button type="submit">🚪 Sign Out</button>
         </form>
-        <% } else { %>
-          <a href="/auth/sign-in">🔑 Sign In</a>
-          <% } %>
+        <a href="/artworks/new">➕ Add Artwork</a>
+      <% } else { %>
+        <a href="/auth/sign-in">🔑 Sign In</a>
+      <% } %>
+    </div>
   </nav>
 
-  <!-- Slider -->
-  <div class="slider">
-    <div class="slide active"><img src="/images/uploads/1.png" alt="Art 1"></div>
-    <div class="slide"><img src="/images/uploads/2.png" alt="Art 2"></div>
-    <div class="slide"><img src="/images/uploads/3.png" alt="Art 3"></div>
-    <div class="slide"><img src="/images/uploads/4.png" alt="Art 4"></div>
-    <div class="slide"><img src="/images/uploads/5.png" alt="Art 5"></div>
-    <div class="slide"><img src="/images/uploads/6.png" alt="Art 6"></div>
-    <div class="slide"><img src="/images/uploads/7.png" alt="Art 7"></div>
-    <div class="slide"><img src="/images/uploads/8.png" alt="Art 8"></div>
-    <div class="slide"><img src="/images/uploads/9.png" alt="Art 9"></div>
-
-    <button class="prev">&#10094;</button>
-    <button class="next">&#10095;</button>
+  <!-- Lista umjetnika -->
+  <div class="artist-list">
+    <h2>Artists</h2>
+    <ul>
+      <% artists.forEach(artist => { %>
+        <li><a href="/artworks/artist/<%= encodeURIComponent(artist) %>"><%= artist %></a></li>
+      <% }) %>
+    </ul>
   </div>
 
+  <!-- Slider sa svim radovima -->
+  <div class="slider">
+    <% if (artworks && artworks.length > 0) { %>
+      <% artworks.forEach((artwork, index) => { %>
+        <div class="slide <%= index === 0 ? 'active' : '' %>">
+          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+        </div>
+      <% }) %>
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    <% } else { %>
+      <p>No artworks uploaded yet.</p>
+    <% } %>
+  </div>
 
-
-  <!-- JS for slider -->
   <script>
     const slides = document.querySelectorAll('.slide');
     let currentSlide = 0;
-
     function showSlide(index) {
       slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
     }
-
     document.querySelector('.next').addEventListener('click', () => {
       currentSlide = (currentSlide + 1) % slides.length;
       showSlide(currentSlide);
     });
-
     document.querySelector('.prev').addEventListener('click', () => {
       currentSlide = (currentSlide - 1 + slides.length) % slides.length;
       showSlide(currentSlide);
@@ -210,5 +91,4 @@
   </script>
 
 </body>
-
 </html>

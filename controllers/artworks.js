@@ -1,85 +1,239 @@
-const express = require('express');
+import express from "express";
+import User from "../models/user.js"; // pretpostavljam da imaš User model
+import bcrypt from "bcryptjs";         // za provjeru lozinke
+import path from "path";
+import multer from "multer";
+import Artwork from "../models/artwork.js";
+import isSignedIn from "../middleware/is-signed-in.js";
+
 const router = express.Router();
-const isSignedIn = require('../middleware/is-signed-in');
-const { Artwork } = require('../models/artwork');
 
-const multer = require('multer');
-const path = require('path');
 
-// Podesi destinaciju i ime fajla
+
+// =======================
+// GET /auth/sign-in
+// Forma za login
+// =======================
+router.get("/sign-in", (req, res) => {
+  res.render("auth/sign-in"); // tvoj EJS login formular
+});
+
+// =======================
+// POST /auth/sign-in
+// Obrada login forme
+// =======================
+router.post("/sign-in", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Pronađi korisnika po emailu
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).send("Neispravni podaci");
+
+    // Provjera lozinke
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).send("Neispravni podaci");
+
+    // ✅ Postavljanje session podataka
+    req.session.userId = user._id;
+    req.session.user = {
+      name: user.name,
+      email: user.email,
+    };
+
+    // Preusmjeri na index ili artworks
+    res.redirect("/artworks");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// =======================
+// POST /auth/sign-out
+// Odjava korisnika
+// =======================
+router.post("/sign-out", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Greška pri odjavi");
+    }
+    res.redirect("/");
+
+  });
+});
+
+
+
+
+
+// Multer storage za upload slika
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/images/uploads');
+    cb(null, "public/images/uploads");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 const upload = multer({ storage });
 
+// =======================
+// GET /artworks
+// Svi radovi + lista umjetnika
+// =======================
+router.get("/", async (req, res) => {
+  try {
+    const artworks = await Artwork.find().sort({ createdAt: -1 });
+    const artists = await Artwork.distinct("artist");
 
-
-
-
-// Svi radovi
-router.get('/', (req, res) => {
-  res.render('artworks/index', { artworks: Artwork.all() });
+    res.render("artworks/index", {
+      user: req.session.user,
+      artworks,
+      artists,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 
-// Novi rad - forma
-router.get('/new', isSignedIn, (req, res) => {
-  res.render('artworks/new');
-});
-
-// Kreiranje rada
-router.post('/', isSignedIn, upload.single('image'), (req, res) => {
-  const { title, artist } = req.body;
-  const imagePath = req.file ? '/images/uploads/' + req.file.filename : null;
-
-  Artwork.create(title, artist, req.session.user.id, imagePath);
-  res.redirect('/artworks');
-});
-
-
-// Prikaz jednog rada
-router.get('/:id', (req, res) => {
-  const artwork = Artwork.findById(req.params.id);
-  if (!artwork) return res.send('Artwork not found');
-  res.render('artworks/show', { artwork });
+// =======================
+// GET /artworks/new
+// Forma za novi rad
+// =======================
+router.get("/new", isSignedIn, (req, res) => {
+  res.render("artworks/new");
 });
 
 
 
 
-// Edit forma
-router.get('/:id/edit', isSignedIn, (req, res) => {
-  const artwork = Artwork.findById(req.params.id);
-  if (!artwork) return res.send('Artwork not found');
-  if (artwork.ownerId !== req.session.user.id) return res.send('Not authorized');
-  res.render('artworks/edit', { artwork });
+// =======================
+// POST /artworks
+// Kreiranje novog rada
+// =======================
+router.post("/", isSignedIn, upload.single("image"), async (req, res) => {
+  try {
+    const { title, artist, description } = req.body;
+    const imagePath = req.file ? "/images/uploads/" + req.file.filename : undefined;
+
+    const artwork = new Artwork({
+      title,
+      artist,
+      description,
+      imagePath,
+      ownerId: req.session.userId,
+    });
+
+    await artwork.save();
+    res.redirect("/artworks");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Neuspelo kreiranje crteža");
+  }
 });
 
 
 
 
-// Ažuriranje rada
-router.put('/:id', isSignedIn, (req, res) => {
-  const { title, artist } = req.body;
-  const artwork = Artwork.findById(req.params.id);
-  if (!artwork) return res.send('Artwork not found');
-  if (artwork.ownerId !== req.session.user.id) return res.send('Not authorized');
-  Artwork.update(req.params.id, title, artist);
-  res.redirect('/artworks/' + req.params.id);
+// =======================
+// GET /artworks/:id
+// Prikaz jednog rada (samo vlasnik)
+// =======================
+router.get("/:id", isSignedIn, async (req, res) => {
+  try {
+    const artwork = await Artwork.findById(req.params.id);
+    if (!artwork) return res.status(404).send("Artwork not found");
+    if (!artwork.ownerId.equals(req.session.userId)) return res.status(403).send("Not authorized");
+
+    res.render("artworks/show", { artwork });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 
-// Brisanje rada
-router.delete('/:id', isSignedIn, (req, res) => {
-  const artwork = Artwork.findById(req.params.id);
-  if (!artwork) return res.send('Artwork not found');
-  if (artwork.ownerId !== req.session.user.id) return res.send('Not authorized');
-  Artwork.delete(req.params.id);
-  res.redirect('/artworks');
+// =======================
+// GET /artworks/:id/edit
+// Forma za edit (samo vlasnik)
+// =======================
+router.get("/:id/edit", isSignedIn, async (req, res) => {
+  try {
+    const artwork = await Artwork.findById(req.params.id);
+    if (!artwork) return res.status(404).send("Artwork not found");
+    if (!artwork.ownerId.equals(req.session.userId)) return res.status(403).send("Not authorized");
+
+    res.render("artworks/edit", { artwork });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 
-module.exports = router;
+// =======================
+// PUT /artworks/:id
+// Update rada (samo vlasnik)
+// =======================
+router.put("/:id", isSignedIn, upload.single("image"), async (req, res) => {
+  try {
+    const { title, artist, description } = req.body;
+    const imagePath = req.file ? "/images/uploads/" + req.file.filename : undefined;
+
+    const updateData = { title, artist, description };
+    if (imagePath) updateData.imagePath = imagePath;
+
+    const artwork = await Artwork.findOneAndUpdate(
+      { _id: req.params.id, ownerId: req.session.userId },
+      updateData,
+      { new: true }
+    );
+
+    if (!artwork) return res.status(404).send("Artwork not found");
+
+    res.redirect("/artworks/" + req.params.id);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Neuspješan update crteža");
+  }
+});
+
+// =======================
+// DELETE /artworks/:id
+// Brisanje rada (samo vlasnik)
+// =======================
+router.delete("/:id", isSignedIn, async (req, res) => {
+  try {
+    const artwork = await Artwork.findOneAndDelete({ _id: req.params.id, ownerId: req.session.userId });
+    if (!artwork) return res.status(404).send("Artwork not found");
+
+    res.redirect("/artworks");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Neuspješno brisanje crteža");
+  }
+});
+
+// =======================
+// GET /artworks/artist/:artist
+// Prikaz radova jednog umjetnika
+// =======================
+router.get("/artist/:artist", async (req, res) => {
+  try {
+    const artworks = await Artwork.find({ artist: req.params.artist }).sort({ createdAt: -1 });
+    if (!artworks.length) return res.status(404).send("Nema radova ovog umjetnika");
+
+    res.render("artworks/artist", {
+      user: req.session.user,
+      artist: req.params.artist,
+      artworks,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+export default router;

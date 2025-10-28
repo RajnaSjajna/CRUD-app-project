@@ -1,46 +1,39 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const session = require('express-session');
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import session from 'express-session';
+import artworksRouter from './controllers/artworks.js';
+import authRouter from './controllers/auth.js';
+import passUserToView from './middleware/pass-user-to-view.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// __dirname u ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
-// Import routes
-const artworkRoutes = require('./controllers/artworks');
-const authRoutes = require('./controllers/auth');
-
-// Middleware-// omogućava public folder za slike i CSS
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.use(express.static('public'));
-
 app.use(session({ secret: 'fineart-secret', resave: false, saveUninitialized: false }));
 
-// Set view engine-// postavi view engine
+// Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Pass user to views (middleware example)
-const passUserToView = require('./middleware/pass-user-to-view');
+// Pass user to views
 app.use(passUserToView);
 
 // Routes
-app.use('/artworks', artworkRoutes);
-app.use('/auth', authRoutes);
+app.use('/artworks', artworksRouter);
+app.use('/auth', authRouter);
 
-
-
-// ruta za početnu stranicu
+// Home route
 app.get('/', (req, res) => {
   res.render('index');
 });
-
-
-
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

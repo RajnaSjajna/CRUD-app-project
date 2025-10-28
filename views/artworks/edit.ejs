@@ -1,6 +1,128 @@
-<h2>Edit Artwork</h2>
-<form method="POST" action="/artworks/<%= artwork.id %>?_method=PUT">
-  <input type="text" name="title" value="<%= artwork.title %>">
-  <input type="text" name="artist" value="<%= artwork.artist %>">
-  <button type="submit">Save</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Artwork | FineArt Gallery</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      box-sizing: border-box;
+    }
+
+    .navbar a,
+    .navbar button {
+      color: #fff;
+      background: rgba(234, 232, 232, 0.667);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .container {
+      margin-top: 80px;
+      width: 90%;
+      max-width: 600px;
+      padding: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 0.5rem;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <h1>FineArt Gallery</h1>
+    <div class="nav-buttons">
+      <a href="/artworks">⬅ Back to Artworks</a>
+      <form action="/auth/sign-out" method="POST" style="display:inline;">
+        <button type="submit">🚪 Sign Out</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Edit Artwork</h2>
+    <form action="/artworks/<%= artwork._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      <div>
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" value="<%= artwork.title %>" required>
+      </div>
+
+      <div>
+        <label for="artist">Artist</label>
+        <input type="text" name="artist" id="artist" value="<%= artwork.artist %>" required>
+      </div>
+
+      <div>
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="4"><%= artwork.description %></textarea>
+      </div>
+
+      <div>
+        <label for="image">Change Image</label>
+        <input type="file" name="image" id="image" accept="image/*">
+        <% if (artwork.imagePath) { %>
+          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+        <% } %>
+      </div>
+
+      <button type="submit">Update Artwork</button>
+    </form>
+  </div>
+
+</body>
+</html>

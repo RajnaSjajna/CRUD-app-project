@@ -1,12 +1,121 @@
-<h1>Add New Artwork</h1>
-<form action="/artworks" method="POST" enctype="multipart/form-data">
-  <input type="text" name="title" placeholder="Title" required>
-  <input type="text" name="artist" placeholder="Artist" required>
-  <input type="file" name="image" accept="image/*">
-  <button type="submit">Create</button>
-</form>
-<a href="/artworks">Back</a>
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Artwork | FineArt Gallery</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
 
+    .navbar {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      box-sizing: border-box;
+    }
+
+    .navbar a,
+    .navbar button {
+      color: #fff;
+      background: rgba(234, 232, 232, 0.667);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .container {
+      margin-top: 80px;
+      width: 90%;
+      max-width: 600px;
+      padding: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <h1>FineArt Gallery</h1>
+    <div class="nav-buttons">
+      <a href="/artworks">⬅ Back to Artworks</a>
+      <form action="/auth/sign-out" method="POST" style="display:inline;">
+        <button type="submit">🚪 Sign Out</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Add New Artwork</h2>
+    <form action="/artworks" method="POST" enctype="multipart/form-data">
+      <div>
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" required>
+      </div>
+
+      <div>
+        <label for="artist">Artist</label>
+        <input type="text" name="artist" id="artist" required>
+      </div>
+
+      <div>
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="4"></textarea>
+      </div>
+
+      <div>
+        <label for="image">Upload Image</label>
+        <input type="file" name="image" id="image" accept="image/*" required>
+      </div>
+
+      <button type="submit">Add Artwork</button>
+    </form>
+  </div>
+
+</body>
+</html>
 
 
