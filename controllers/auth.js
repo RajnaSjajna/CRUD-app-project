@@ -9,7 +9,7 @@ const router = express.Router();
 // Prikaz forme za registraciju
 // =======================
 router.get("/sign-up", (req, res) => {
-  res.render("auth/sign-up.ejs");
+  res.render("auth/sign-up");
 });
 
 // =======================
@@ -18,27 +18,37 @@ router.get("/sign-up", (req, res) => {
 // =======================
 router.post("/sign-up", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
     // Provjeri da li korisnik već postoji
-    const existingUser = await User.findOne({ username });
-    if (existingUser) return res.status(400).send("Korisnik već postoji");
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.send("Korisnik sa tim username-om ili email-om već postoji.");
+    }
 
-    // Kreiraj novog korisnika
-    const user = new User({ username, email, password });
-    await user.save();
+    // Hash lozinke
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Postavi session
-    req.session.userId = user._id;
+    // Kreiraj korisnika
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    // Automatski login nakon registracije
+    req.session.userId = newUser._id;
     req.session.user = {
-      username: user.username,
-      email: user.email,
+      username: newUser.username,
+      email: newUser.email,
     };
 
     res.redirect("/artworks");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).send("Greška pri registraciji");
   }
 });
 
@@ -47,12 +57,12 @@ router.post("/sign-up", async (req, res) => {
 // Prikaz forme za login
 // =======================
 router.get("/sign-in", (req, res) => {
-  res.render("auth/sign-in.ejs");
+  res.render("auth/sign-in");
 });
 
 // =======================
 // POST /auth/sign-in
-// Obrada logina
+// Obrada login forme
 // =======================
 router.post("/sign-in", async (req, res) => {
   try {
@@ -60,12 +70,13 @@ router.post("/sign-in", async (req, res) => {
 
     // Pronađi korisnika po username-u
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).send("Neispravni podaci");
+    if (!user) return res.send("Neispravan username ili password");
 
+    // Provjeri lozinku
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).send("Neispravni podaci");
+    if (!isMatch) return res.send("Neispravan username ili password");
 
-    // Postavi session
+    // Spremi u session
     req.session.userId = user._id;
     req.session.user = {
       username: user.username,
@@ -75,7 +86,7 @@ router.post("/sign-in", async (req, res) => {
     res.redirect("/artworks");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).send("Greška pri login-u");
   }
 });
 
@@ -85,7 +96,10 @@ router.post("/sign-in", async (req, res) => {
 // =======================
 router.post("/sign-out", (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).send("Greška pri odjavi");
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Greška pri odjavi");
+    }
     res.redirect("/");
   });
 });
