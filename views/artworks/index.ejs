@@ -24,21 +24,6 @@
       padding: 15px 40px;
     }
 
-    .navbar .left {
-      flex: 1;
-      text-align: left;
-    }
-
-    .navbar .center {
-      flex: 1;
-      text-align: center;
-    }
-
-    .navbar .right {
-      flex: 1;
-      text-align: right;
-    }
-
     .navbar a, .navbar button {
       color: white;
       text-decoration: none;
@@ -58,13 +43,12 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      justify-content: flex-end;
     }
 
     /* === SLIDER === */
     .slider {
       width: 100%;
-      height: 100vh;
+      height: calc(100vh - 80px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -77,59 +61,42 @@
       align-items: center;
       justify-content: center;
       gap: 60px;
-      padding: 40px;
       width: 100%;
       height: 100%;
+      padding: 40px 60px;
       box-sizing: border-box;
-      position: relative;
     }
 
     .slide.active {
       display: flex;
     }
 
-    .slide img {
-      width: 90vw;
-      max-width: 1300px;
-      max-height: 80vh;
+    /* Slika lijevo */
+    .art-image {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 90vh;
+      max-width: 900px;
+    }
+
+    .art-image img {
+      width: 400%;
+      height: 500%;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 10px;
       box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease;
-    }
-
-    .slide img:hover {
-      transform: scale(1.02);
-    }
-
-    .art-info {
-      max-width: 350px;
-      text-align: left;
-      position: absolute;
-      top: 10%;
-      right: 8%;
-    }
-
-    .art-info h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      color: #222;
-    }
-
-    .art-info p {
-      font-size: 1.1rem;
-      color: #555;
-      margin-bottom: 15px;
     }
 
     /* Dugmad Edit i Delete */
     .actions {
       position: absolute;
-      bottom: 8%;
-      right: 8%;
+      bottom: 15px;
+      right: 20px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .actions a, .actions button {
@@ -140,13 +107,45 @@
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
-      font-size: 1em;
+      font-size: 0.95em;
       transition: background 0.3s;
     }
 
     .actions a:hover, .actions button:hover {
       background: #ffb347;
       color: black;
+    }
+
+    /* Opis desno */
+    .art-info {
+  flex: 1;
+  text-align: left;
+  padding: 20px;
+  max-width: 300px;
+  overflow-y: auto;
+
+  width: 20ch;        /* širina reda oko 30 karaktera */
+  word-wrap: break-word; /* ako reč prelazi liniju, prelama se */
+  white-space: pre-wrap;   /* dozvoli prelamanje teksta */
+}
+
+
+
+
+
+
+
+    .art-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    .art-info p {
+      font-size: 1.1rem;
+      color: #444;
+      margin-bottom: 12px;
     }
 
     /* Strelice */
@@ -204,22 +203,27 @@
     <% if (artworks && artworks.length > 0) { %>
       <% artworks.forEach((artwork, index) => { %>
         <div class="slide <%= index === 0 ? 'active' : '' %>">
-          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+          
+          <!-- Slika lijevo -->
+          <div class="art-image">
+            <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+            
+            <% if (user && user.username === artwork.artist) { %>
+              <div class="actions">
+                <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
+                <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE" style="display:inline;">
+                  <button type="submit">🗑️ Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
 
+          <!-- Opis desno -->
           <div class="art-info">
             <h3><%= artwork.title %></h3>
             <p><%= artwork.description %></p>
             <p><em>by <%= artwork.artist %></em></p>
           </div>
-
-          <% if (user && user.username === artwork.artist) { %>
-            <div class="actions">
-              <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
-              <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE" style="display:inline;">
-                <button type="submit">🗑️ Delete</button>
-              </form>
-            </div>
-          <% } %>
         </div>
       <% }) %>
 
@@ -253,3 +257,4 @@
 
 </body>
 </html>
+
