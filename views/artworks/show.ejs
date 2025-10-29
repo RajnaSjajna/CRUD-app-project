@@ -1,99 +1,22 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= artwork.title %> | FineArt Gallery</title>
   <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    .navbar {
-      width: 100%;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.45);
-      box-sizing: border-box;
-    }
-
-    .navbar a,
-    .navbar button {
-      color: #fff;
-      background: rgba(234, 232, 232, 0.667);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .container {
-      margin-top: 80px;
-      width: 90%;
-      max-width: 800px;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      margin-bottom: 1rem;
-    }
-
-    h2 {
-      margin-bottom: 0.5rem;
-    }
-
-    p {
-      margin: 0.25rem 0;
-    }
-
-    .actions {
-      margin-top: 1rem;
-    }
-
-    .actions a,
-    .actions form button {
-      display: inline-block;
-      margin: 0.25rem;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-      background: rgba(0, 0, 0, 0.7);
-      color: #fff;
-    }
-
-    .actions form {
-      display: inline;
-    }
-  </style>
-</head>
-
+  </head>
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar">
-    <h1>FineArt Gallery</h1>
-    <div class="nav-buttons">
-      <a href="/artworks">⬅ Back to Artworks</a>
+    <div class="left">
+      <a href="/artworks">🏠 Home</a>
+    </div>
+
+    <div class="right">
       <% if (user) { %>
-        <form action="/auth/sign-out" method="POST" style="display:inline;">
+        <span>Hi, <%= user.username %>!</span>
+        <form method="POST" action="/auth/sign-out" style="display:inline;">
           <button type="submit">🚪 Sign Out</button>
         </form>
       <% } else { %>
@@ -103,24 +26,29 @@
   </nav>
 
   <div class="container">
-    <h2><%= artwork.title %></h2>
-    <p><strong>Artist:</strong> <%= artwork.artist %></p>
-    <% if (artwork.description) { %>
-      <p><strong>Description:</strong> <%= artwork.description %></p>
-    <% } %>
-    <% if (artwork.imagePath) { %>
-      <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
-    <% } %>
+    <div class="art-image">
+      <% if (artwork.imagePath) { %>
+        <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+      <% } %>
 
-    <% if (user && artwork.ownerId.equals(user._id)) { %>
-      <div class="actions">
-        <a href="/artworks/<%= artwork._id %>/edit">Edit</a>
-        <form action="/artworks/<%= artwork._id %>?_method=DELETE" method="POST">
-          <button type="submit">Delete</button>
-        </form>
-      </div>
-    <% } %>
+      <% if (user && user._id.toString() === artwork.ownerId.toString()) { %>
+        <div class="card-buttons">
+          <a href="/artworks/<%= artwork._id %>/edit">Edit</a>
+          <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE">
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="art-details">
+      <h2><%= artwork.title %></h2>
+      <p><strong>Artist:</strong> <%= artwork.artist %></p>
+      <p><%= artwork.description %></p>
+    </div>
   </div>
 
+  <a class="back-link" href="/artworks">⬅ Back to Artworks</a>
+
 </body>
-</html>
+</html> -->

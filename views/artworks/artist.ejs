@@ -4,157 +4,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= artist %> | FineArt Gallery</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>My Artworks | FineArt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* GLOBAL */
     body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       margin: 0;
       padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #111;
+      color: #fff;
+      min-height: 100vh;
     }
 
+    /* NAVIGATION */
     .navbar {
-      width: 100%;
-      padding: 0.75rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.45);
-      box-sizing: border-box;
+      padding: 15px 40px;
+      background: #181818;
+      border-bottom: 1px solid #333;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      color: #ffb347;
+      letter-spacing: 1px;
     }
 
     .navbar a,
     .navbar button {
       color: #fff;
-      background: rgba(234, 232, 232, 0.667);
+      background: none;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
       font-size: 1rem;
+      text-decoration: none;
       cursor: pointer;
+      transition: 0.3s ease;
     }
 
-    .slider {
-      position: relative;
-      margin-top: 80px;
-      width: 90%;
-      max-width: 900px;
-      height: 70vh;
+    .navbar a:hover,
+    .navbar button:hover {
+      color: #ffb347;
+    }
+
+    .navbar .user-info {
       display: flex;
-      justify-content: center;
       align-items: center;
+      gap: 15px;
+    }
+
+    .navbar .username {
+      font-weight: 600;
+      color: #ffb347;
+    }
+
+    /* MAIN CONTENT */
+    h2 {
+      text-align: center;
+      margin: 40px 0 10px;
+      font-size: 2.2rem;
+      color: #ffb347;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      padding: 40px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .art-card {
+      background: #1d1d1d;
+      border-radius: 14px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
       overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .slide {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .art-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
 
-    .slide.active {
+    .art-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
       display: block;
     }
 
-    .slide img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .prev,
-    .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      font-size: 2rem;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 50%;
-      z-index: 5;
-      transition: background 0.3s;
-    }
-
-    .prev:hover,
-    .next:hover {
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .prev {
-      left: 20px;
-    }
-
-    .next {
-      right: 20px;
-    }
-
-    h2 {
-      margin-top: 1rem;
+    .art-info {
+      padding: 18px;
       text-align: center;
+    }
+
+    .art-info h3 {
+      color: #fff;
+      margin-bottom: 8px;
+      font-size: 1.3rem;
+    }
+
+    .art-info p {
+      color: #ccc;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+
+    /* BUTTON */
+    .add-artwork-btn {
+      display: block;
+      margin: 20px auto 50px;
+      background: #ffb347;
+      color: #111;
+      font-weight: 600;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .add-artwork-btn:hover {
+      background: #ffc978;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <h1>FineArt Gallery</h1>
-    <div class="nav-buttons">
-      <a href="/artworks">⬅ Back to Artworks</a>
-      <% if (user) { %>
-        <form action="/auth/sign-out" method="POST" style="display:inline;">
-          <button type="submit">🚪 Sign Out</button>
-        </form>
-      <% } else { %>
-        <a href="/auth/sign-in">🔑 Sign In</a>
-      <% } %>
+    <div class="user-info">
+      <a href="/">🏠 Home</a>
+      <div class="buttons-navbar">
+        <a href="/artworks/new">➕ Add Artwork</a>
+        <% if (user) { %>
+          <span class="username">👋 Hi, <%= user.username %></span>
+          <form method="POST" action="/auth/sign-out" style="display:inline;">
+            <button type="submit">🚪 Sign Out</button>
+          </form>
+          <% } else { %>
+            <a href="/auth/sign-in">🔑 Sign In</a>
+          <% } %>
+      </div>
+
     </div>
   </nav>
 
-  <h2>Artworks by <%= artist %></h2>
+  <!-- MAIN -->
+  <main>
+    <h2>🎨 My Artworks</h2>
 
-  <!-- Slider sa radovima -->
-  <div class="slider">
-    <% if (artworks.length > 0) { %>
-      <% artworks.forEach((artwork, index) => { %>
-        <div class="slide <%= index === 0 ? 'active' : '' %>">
-          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+    <% if (artworks.length===0) { %>
+      <p style="text-align:center; margin-top:50px; color:#888;">Još nemaš unesenih crteža.</p>
+      <% } else { %>
+        <div class="gallery">
+          <% artworks.forEach(artwork=> { %>
+            <div class="art-card">
+              <% if (artwork.imagePath) { %>
+                <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+                <% } %>
+                  <div class="art-info">
+                    <h3>
+                      <%= artwork.title %>
+                    </h3>
+                    <p>
+                      <%= artwork.description %>
+                    </p>
+                    <p style="color:#ffb347; font-size:0.9rem;">by <%= artwork.artist %>
+                    </p>
+                  </div>
+            </div>
+            <% }) %>
         </div>
-      <% }) %>
-      <button class="prev">&#10094;</button>
-      <button class="next">&#10095;</button>
-    <% } else { %>
-      <p>No artworks found for this artist.</p>
-    <% } %>
-  </div>
+        <% } %>
 
-  <script>
-    const slides = document.querySelectorAll('.slide');
-    let currentSlide = 0;
-    function showSlide(index) {
-      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-    }
-    document.querySelector('.next').addEventListener('click', () => {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
-    });
-    document.querySelector('.prev').addEventListener('click', () => {
-      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      showSlide(currentSlide);
-    });
-  </script>
+          <a href="/artworks/new" class="add-artwork-btn">➕ Add New Artwork</a>
+  </main>
 
 </body>
+
 </html>

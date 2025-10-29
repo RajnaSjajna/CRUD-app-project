@@ -2,6 +2,8 @@ import express from "express";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 
+
+
 const router = express.Router();
 
 // =======================
@@ -22,18 +24,23 @@ router.post("/sign-up", async (req, res) => {
 
     // Provjeri da li korisnik već postoji
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+
     if (existingUser) {
       return res.send("Korisnik sa tim username-om ili email-om već postoji.");
     }
 
+
+
     // Hash lozinke
-    const hashedPassword = await bcrypt.hash(password, 10);
+const hashedPassword = await bcrypt.hash(password, 10);
+
+
 
     // Kreiraj korisnika
     const newUser = new User({
       username,
       email,
-      password: hashedPassword,
+      password,
     });
 
     await newUser.save();
@@ -70,7 +77,7 @@ router.post("/sign-in", async (req, res) => {
 
     // Pronađi korisnika po username-u
     const user = await User.findOne({ username });
-    if (!user) return res.send("Neispravan username ili password");
+    if (!user) return res.send("Username or password is incorrect!");
 
     // Provjeri lozinku
     const isMatch = await bcrypt.compare(password, user.password);
@@ -80,7 +87,9 @@ router.post("/sign-in", async (req, res) => {
     req.session.userId = user._id;
     req.session.user = {
       username: user.username,
-      email: user.email,
+      _id: user._id,
+      email: user.email
+      
     };
 
     res.redirect("/artworks");

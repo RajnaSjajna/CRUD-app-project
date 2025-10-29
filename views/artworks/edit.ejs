@@ -94,23 +94,28 @@
     </div>
   </nav>
 
-  <div class="container">
-    <h2>Edit Artwork</h2>
-    <form action="/artworks/<%= artwork._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
-      <div>
-        <label for="title">Title</label>
-        <input type="text" name="title" id="title" value="<%= artwork.title %>" required>
-      </div>
+  <nav class="navbar">
+  <div class="left">
+    <a href="/">🏠 Home</a>
+  </div>
 
-      <div>
-        <label for="artist">Artist</label>
-        <input type="text" name="artist" id="artist" value="<%= artwork.artist %>" required>
-      </div>
+  <div class="center">
+    <a href="/artworks/new">📤 Upload Picture</a>
+  </div>
 
-      <div>
-        <label for="description">Description</label>
-        <textarea name="description" id="description" rows="4"><%= artwork.description %></textarea>
-      </div>
+  <div class="right">
+    <% if (user) { %>
+      <span>Hi, <%= user.username %>!</span>
+      <form method="POST" action="/auth/sign-out" style="display:inline;">
+        <button type="submit">🚪 Sign Out</button>
+      </form>
+    <% } else { %>
+      <a href="/auth/sign-in">🔑 Sign In</a>
+    <% } %>
+  </div>
+</nav>
+
+
 
       <div>
         <label for="image">Change Image</label>

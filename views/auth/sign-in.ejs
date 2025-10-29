@@ -4,20 +4,107 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In | FineArt</title>
-  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Open+Sans&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #f9f7f7, #e4e1dc);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 40px 60px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 360px;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    input {
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #b49d80;
+      box-shadow: 0 0 6px rgba(180,157,128,0.3);
+    }
+
+    button {
+      background-color: #b49d80;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #a0886e;
+      transform: translateY(-2px);
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 0.95em;
+      color: #555;
+    }
+
+    a {
+      color: #b49d80;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
 </head>
 <body>
+  <div class="login-container">
+    <h2>Welcome Back 🎨</h2>
+    <form method="POST" action="/auth/sign-in">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Sign In</button>
+    </form>
 
-  <h2>Sign In</h2>
-  <form method="POST" action="/auth/sign-in">
-    <input type="text" name="username"  placeholder="Username" >
-
-    <input type="password" name="password" placeholder="Password">
-    
-    <button type="submit">Sign In</button>
-  </form>
-
-  <p>Don't have an account? <a href="/auth/sign-up">Sign Up</a></p>
-
-</body>
-</html>
+    <p>Don't have an account? <a href="/auth/sign-up">Sign Up</a></p>
+  </div>
+</

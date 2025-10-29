@@ -9,40 +9,57 @@
   <style>
     body {
       font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       margin: 0;
       padding: 0;
+      background: #f5f5f5;
     }
 
+    /* ===== NAVBAR ===== */
     .navbar {
       width: 100%;
-      padding: 0.75rem 1.5rem;
+      background-color: #1f1f1f;
+      color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.45);
+      padding: 0.75rem 1.5rem;
       box-sizing: border-box;
     }
 
     .navbar a,
     .navbar button {
-      color: #fff;
-      background: rgba(234, 232, 232, 0.667);
+      color: white;
+      background: #333;
       border: none;
       padding: 0.5rem 1rem;
-      border-radius: 8px;
+      border-radius: 5px;
       text-decoration: none;
       font-size: 1rem;
       cursor: pointer;
+      margin-left: 0.5rem;
     }
 
+    .navbar a:hover,
+    .navbar button:hover {
+      background: #555;
+    }
+
+    .navbar .left,
+    .navbar .center,
+    .navbar .right {
+      display: flex;
+      align-items: center;
+    }
+
+    /* ===== FORM CONTAINER ===== */
     .container {
-      margin-top: 80px;
+      margin: 50px auto;
       width: 90%;
       max-width: 600px;
-      padding: 1rem;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     form {
@@ -53,6 +70,7 @@
 
     label {
       font-weight: bold;
+      margin-bottom: 0.3rem;
     }
 
     input[type="text"],
@@ -62,35 +80,60 @@
       padding: 0.5rem;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
 
-    button {
-      padding: 0.5rem 1rem;
+    button[type="submit"] {
+      background-color: #1f1f1f;
+      color: white;
+      font-size: 1.1rem;
+      padding: 0.7rem;
       border-radius: 5px;
-      border: none;
-      background: #333;
-      color: #fff;
-      cursor: pointer;
-      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #555;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0;
+      font-size: 1.8rem;
     }
   </style>
 </head>
 
 <body>
 
+  <!-- ===== NAVBAR ===== -->
   <nav class="navbar">
-    <h1>FineArt Gallery</h1>
-    <div class="nav-buttons">
+    <div class="left">
+      <a href="/">🏠 Home</a>
       <a href="/artworks">⬅ Back to Artworks</a>
-      <form action="/auth/sign-out" method="POST" style="display:inline;">
-        <button type="submit">🚪 Sign Out</button>
-      </form>
+    </div>
+
+    <div class="center">
+      <h1>FineArt Gallery</h1>
+    </div>
+
+    <div class="right">
+      <% if (user) { %>
+        <span>Hi, <%= user.username %>!</span>
+        <form method="POST" action="/auth/sign-out" style="display:inline;">
+          <button type="submit">🚪 Sign Out</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/sign-in">🔑 Sign In</a>
+      <% } %>
     </div>
   </nav>
 
+  <!-- ===== UPLOAD FORM ===== -->
   <div class="container">
     <h2>Add New Artwork</h2>
-    <form action="/artworks" method="POST" enctype="multipart/form-data">
+    <form method="POST" action="/artworks" enctype="multipart/form-data">
       <div>
         <label for="title">Title</label>
         <input type="text" name="title" id="title" required>
@@ -111,11 +154,9 @@
         <input type="file" name="image" id="image" accept="image/*" required>
       </div>
 
-      <button type="submit">Add Artwork</button>
+      <button type="submit">Upload Picture</button>
     </form>
   </div>
 
 </body>
 </html>
-
-
