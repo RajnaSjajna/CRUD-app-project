@@ -1,6 +1,6 @@
 <h1><%= artwork.title %></h1>
-<p><strong>Umetnik:</strong> <%= artwork.artist %></p>
-<p><strong>Opis:</strong> <%= artwork.description %></p>
+<p><strong>Artist:</strong> <%= artwork.artist %></p>
+<p><strong>Description:</strong> <%= artwork.description %></p>
 
 <% if (artwork.imagePath) { %>
   <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>" width="300">
@@ -11,9 +11,9 @@
     <a href="/artworks/<%= artwork._id %>/edit">Uredi</a>
     |
     <form action="/artworks/<%= artwork._id %>?_method=DELETE" method="POST" style="display:inline;">
-      <button type="submit">Obriši</button>
+      <button type="submit">Delete</button>
     </form>
   </p>
 <% } %>
 
-<a href="/artworks">Nazad na listu radova</a>
+<a href="/artworks">Back to Artworks</a>

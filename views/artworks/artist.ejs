@@ -121,7 +121,8 @@
     }
 
     /* ===== BUTTONS ===== */
-  
+    
+
      .edit-delete {
       position: absolute;
       top: 12px;
@@ -203,12 +204,10 @@
     <% if (artworks.length === 0) { %>
       <p style="text-align:center; margin-top:50px; color:#888;">You haven't uploaded any artworks yet.</p>
     <% } else { %>
-      <div class="gallery">
-        <% artworks.forEach(artwork => { %>
-          <div class="art-card">
-            <% if (artwork.imagePath) { %>
-              <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
-            <% } %>
+      <div class="art-card">
+  <% if (artwork.imagePath) { %>
+    <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+  <% } %>
 
             <div class="art-info">
               <h3><%= artwork.title %></h3>
