@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Artists | FineArt Gallery</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/_navbar') %>
+  <h1>All Artists</h1>
+  <ul>
+    <% artists.forEach(artist => { %>
+      <li><a href="/artworks/artist/<%= artist %>"><%= artist %></a></li>
+    <% }) %>
+  </ul>
+  <a href="/">Back to Home</a>
+</body>
+</html>

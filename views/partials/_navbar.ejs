@@ -1,11 +1,68 @@
-<nav>
-  <a href="/">Home</a>
-  <a href="/artworks">Artworks</a>
-  <% if (user) { %>
-    <span>Welcome, <%= user.username %></span>
-    <a href="/auth/sign-out">Sign Out</a>
-  <% } else { %>
-    <a href="/auth/sign-in">Sign In</a>
-    <a href="/auth/sign-up">Sign Up</a>
-  <% } %>
+<nav class="navbar">
+  <h1>FineArt Gallery</h1>
+  <div class="nav-buttons">
+    <a href="/">🏠 Home</a>
+    <a href="/artworks/artists">🎨 Artworks</a>  <!-- javna lista umetnika -->
+
+    <% if (user) { %>
+      <span class="username">👋 Welcome, <%= user.username %></span>
+      <form action="/auth/sign-out" method="POST" style="display:inline;">
+        <button type="submit">🚪 Sign Out</button>
+      </form>
+    <% } else { %>
+      <a href="/auth/sign-in">🔑 Sign In</a>
+      <a href="/auth/sign-up">📝 Sign Up</a>
+    <% } %>
+  </div>
 </nav>
+
+<style>
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #181818;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .navbar h1 {
+    color: #ffb347;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+
+  .nav-buttons a,
+  .nav-buttons button,
+  .nav-buttons span {
+    margin-left: 15px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+
+  .nav-buttons a:hover,
+  .nav-buttons button:hover {
+    color: #ffb347;
+  }
+
+  .nav-buttons button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+  }
+
+  .nav-buttons button:hover {
+    background-color: #ff4c4c;
+  }
+
+  .nav-buttons span {
+    font-weight: 600;
+    color: #ffb347;
+  }
+</style>

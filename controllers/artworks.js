@@ -58,15 +58,32 @@ const upload = multer({ storage });
 // GET /artworks
 // Svi radovi
 // =======================
-router.get("/", async (req, res) => {
+router.get("/", isSignedIn, async (req, res) => {
   try {
-    const artworks = await Artwork.find().sort({ createdAt: -1 });
-    const artists = await Artwork.distinct("artist");
+    const artworks = await Artwork.find({ ownerId: req.session.userId }).sort({ createdAt: -1 });
+    res.render("artworks/index", { artworks, user: req.session.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
 
-    res.render("artworks/index", {
-      user: req.session.user,
-      artworks,
-      artists,
+
+
+
+
+
+// =======================
+// Lista svih registrovanih umetnika (za sve korisnike)
+// =======================
+router.get("/artists", async (req, res) => {
+  try {
+    // Dohvati sve različite umetnike iz kolekcije Artwork
+    const artists = await Artwork.distinct("artist");
+    
+    res.render("artworks/artists", { 
+      artists, 
+      user: req.session.user 
     });
   } catch (err) {
     console.error(err);
@@ -74,14 +91,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
 // =======================
 // GET /artworks/artist/:artist
-// Prikaz radova jednog umjetnika
+// Prikaz radova jednog umjetnika -za sve korisnike
 // =======================
 router.get("/artist/:artist", async (req, res) => {
   try {
     const artworks = await Artwork.find({ artist: req.params.artist }).sort({ createdAt: -1 });
-    if (!artworks.length) return res.status(404).send("Nema radova ovog umjetnika");
+
+    if (!artworks.length) return res.status(404).send("This artist has no artworks.");
 
     res.render("artworks/artist", {
       user: req.session.user,
@@ -93,6 +117,9 @@ router.get("/artist/:artist", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+
+
 
 // =======================
 // GET /artworks/new
@@ -203,5 +230,44 @@ router.delete("/:id", isSignedIn, async (req, res) => {
     res.status(500).send("Neuspješno brisanje crteža");
   }
 });
+
+
+
+// =======================
+// Lista svih registrovanih umetnika dostupno svima
+// =======================
+export const listArtists = async (req, res) => {
+  try {
+    // Pronađi sve korisnike koji su dodali bar jedan rad
+    const artists = await Artwork.distinct("artist");
+    res.render("artworks/artists", { artists, user: req.session.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+// =======================
+// Lista radova jednog umetnika
+// =======================
+export const listArtworksByArtist = async (req, res) => {
+  try {
+    const artworks = await Artwork.find({ artist: req.params.artist }).sort({ createdAt: -1 });
+    if (!artworks.length) return res.status(404).send("No artworks for this artist");
+
+    res.render("artworks/artist", {
+      artist: req.params.artist,
+      artworks,
+      user: req.session.user,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+
+
+
 
 export default router;
