@@ -91,9 +91,14 @@
       font-size: 1rem;
     }
 
+    .owner-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
     .owner-buttons a,
     .owner-buttons button {
-      margin-right: 10px;
       padding: 0.5rem 1rem;
       border-radius: 5px;
       border: none;
@@ -107,7 +112,12 @@
       text-decoration: none;
     }
 
-    .owner-buttons button {
+    .owner-buttons button.save-btn {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .owner-buttons button.delete-btn {
       background-color: #ff4c4c;
       color: #fff;
     }
@@ -116,8 +126,12 @@
       background-color: #555;
     }
 
-    .owner-buttons button:hover {
-      background-color: #ff1a1a;
+    .owner-buttons button.save-btn:hover {
+      background-color: #218838;
+    }
+
+    .owner-buttons button.delete-btn:hover {
+      background-color: #dc3545;
     }
   </style>
 </head>
@@ -151,7 +165,7 @@
     <!-- Right: Form & Info -->
     <div class="right">
       <h1>Edit Artwork</h1>
-      <form action="/artworks/<%= artwork._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      <form id="editForm" action="/artworks/<%= artwork._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
         <label>Title:</label>
         <input type="text" name="title" value="<%= artwork.title %>" required>
 
@@ -163,22 +177,53 @@
 
         <label>New Image (optional):</label>
         <input type="file" name="image">
-
-        <button type="submit">Update Artwork</button>
       </form>
 
       <% if (user && artwork.ownerId.equals(user._id)) { %>
         <div class="owner-buttons">
-          <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
+          <button id="editBtn" type="button">✏️ Edit</button>
+          <button id="saveBtn" type="button" class="save-btn">💾 Save</button>
+
           <form action="/artworks/<%= artwork._id %>?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit">🗑️ Delete</button>
+            <button type="submit" class="delete-btn">🗑️ Delete</button>
           </form>
         </div>
       <% } %>
-
-      <a href="/artworks/<%= artwork._id %>">Back to Artwork</a>
     </div>
   </div>
 
+  <script>
+    const editForm = document.getElementById('editForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const editBtn = document.getElementById('editBtn');
+
+    // Dugme Edit aktivira polja
+    editBtn?.addEventListener('click', () => {
+      editForm.querySelectorAll('input, textarea').forEach(el => el.disabled = false);
+      alert('Form is now editable!');
+    });
+
+    // Dugme Save šalje AJAX PUT zahtev
+    saveBtn?.addEventListener('click', async () => {
+      const formData = new FormData(editForm);
+      try {
+        const response = await fetch(editForm.action, {
+          method: 'POST', // PUT preko _method
+          body: formData
+        });
+
+        if (response.ok) {
+          alert('Artwork saved successfully!');
+        } else {
+          alert('Error saving artwork.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error sending request.');
+      }
+    });
+  </script>
+
 </body>
+
 </html>

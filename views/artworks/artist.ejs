@@ -209,6 +209,15 @@
     <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
   <% } %>
 
+
+<div class="gallery">
+  <% artworks.forEach(artwork => { %>
+    <div class="art-card">
+      <% if (artwork.imagePath) { %>
+        <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+      <% } %>
+
+
             <div class="art-info">
               <h3><%= artwork.title %></h3>
               <p><%= artwork.description %></p>
