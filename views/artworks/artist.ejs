@@ -4,10 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Artworks | FineArt</title>
+  <title>My Artworks | FineArt Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
-    /* GLOBAL */
+    /* ===== GLOBAL ===== */
     body {
       margin: 0;
       padding: 0;
@@ -17,7 +18,7 @@
       min-height: 100vh;
     }
 
-    /* NAVIGATION */
+    /* ===== NAVBAR ===== */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -63,7 +64,7 @@
       color: #ffb347;
     }
 
-    /* MAIN CONTENT */
+    /* ===== MAIN ===== */
     h2 {
       text-align: center;
       margin: 40px 0 10px;
@@ -115,12 +116,51 @@
       color: #ccc;
       font-size: 0.95rem;
       font-style: italic;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
 
-    /* BUTTON */
+    /* ===== BUTTONS ===== */
+  
+     .edit-delete {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+    .edit-delete a,
+    .edit-delete button {
+      background: #ffb347;
+      color: #111;
+      font-weight: 600;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      margin: 0 5px;
+      transition: 0.3s ease;
+    }
+
+    .edit-delete a:hover {
+      background: #ffc978;
+    }
+
+    .edit-delete button {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    .edit-delete button:hover {
+      background: #e74c3c;
+    }
+
+    /* ===== ADD ARTWORK BUTTON ===== */
     .add-artwork-btn {
       display: block;
-      margin: 20px auto 50px;
+      margin: 40px auto 50px;
       background: #ffb347;
       color: #111;
       font-weight: 600;
@@ -139,57 +179,58 @@
 
 <body>
 
-  <!-- NAVBAR -->
+  <!-- ===== NAVBAR ===== -->
   <nav class="navbar">
     <h1>FineArt Gallery</h1>
     <div class="user-info">
       <a href="/">🏠 Home</a>
-      <div class="buttons-navbar">
-        <a href="/artworks/new">➕ Add Artwork</a>
-        <% if (user) { %>
-          <span class="username">👋 Hi, <%= user.username %></span>
-          <form method="POST" action="/auth/sign-out" style="display:inline;">
-            <button type="submit">🚪 Sign Out</button>
-          </form>
-          <% } else { %>
-            <a href="/auth/sign-in">🔑 Sign In</a>
-          <% } %>
-      </div>
-
+      <a href="/artworks/new">➕ Add Artwork</a>
+      <% if (user) { %>
+        <span class="username">👋 Hi, <%= user.username %></span>
+        <form method="POST" action="/auth/sign-out" style="display:inline;">
+          <button type="submit">🚪 Sign Out</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/sign-in">🔑 Sign In</a>
+      <% } %>
     </div>
   </nav>
 
-  <!-- MAIN -->
+  <!-- ===== MAIN CONTENT ===== -->
   <main>
     <h2>🎨 My Artworks</h2>
 
-    <% if (artworks.length===0) { %>
-      <p style="text-align:center; margin-top:50px; color:#888;">Još nemaš unesenih crteža.</p>
-      <% } else { %>
-        <div class="gallery">
-          <% artworks.forEach(artwork=> { %>
-            <div class="art-card">
-              <% if (artwork.imagePath) { %>
-                <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
-                <% } %>
-                  <div class="art-info">
-                    <h3>
-                      <%= artwork.title %>
-                    </h3>
-                    <p>
-                      <%= artwork.description %>
-                    </p>
-                    <p style="color:#ffb347; font-size:0.9rem;">by <%= artwork.artist %>
-                    </p>
-                  </div>
-            </div>
-            <% }) %>
-        </div>
-        <% } %>
+    <% if (artworks.length === 0) { %>
+      <p style="text-align:center; margin-top:50px; color:#888;">You haven't uploaded any artworks yet.</p>
+    <% } else { %>
+      <div class="gallery">
+        <% artworks.forEach(artwork => { %>
+          <div class="art-card">
+            <% if (artwork.imagePath) { %>
+              <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+            <% } %>
 
-          <a href="/artworks/new" class="add-artwork-btn">➕ Add New Artwork</a>
+            <div class="art-info">
+              <h3><%= artwork.title %></h3>
+              <p><%= artwork.description %></p>
+              <p style="color:#ffb347; font-size:0.9rem;">by <%= artwork.artist %></p>
+            </div>
+
+            <% if (user && artwork.ownerId.equals(user._id)) { %>
+              <div class="edit-delete">
+                <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
+                <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE" style="display:inline;">
+                  <button type="submit">🗑️ Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <a href="/artworks/new" class="add-artwork-btn">➕ Add New Artwork</a>
   </main>
 
 </body>
-
 </html>

@@ -84,49 +84,63 @@
 
 <body>
 
+  <!-- Navigacija -->
   <nav class="navbar">
     <h1>FineArt Gallery</h1>
     <div class="nav-buttons">
       <a href="/artworks">⬅ Back to Artworks</a>
-      <form action="/auth/sign-out" method="POST" style="display:inline;">
-        <button type="submit">🚪 Sign Out</button>
-      </form>
+      <% if (user) { %>
+        <form action="/auth/sign-out" method="POST" style="display:inline;">
+          <button type="submit">🚪 Sign Out</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/sign-in">🔑 Sign In</a>
+      <% } %>
     </div>
   </nav>
 
+  <!-- Druga navigacija -->
   <nav class="navbar">
-  <div class="left">
-    <a href="/">🏠 Home</a>
-  </div>
+    <div class="left">
+      <a href="/">🏠 Home</a>
+    </div>
 
-  <div class="center">
-    <a href="/artworks/new">📤 Upload Picture</a>
-  </div>
+    <div class="center">
+      <a href="/artworks/new">📤 Upload Picture</a>
+    </div>
 
-  <div class="right">
-    <% if (user) { %>
-      <span>Hi, <%= user.username %>!</span>
-      <form method="POST" action="/auth/sign-out" style="display:inline;">
-        <button type="submit">🚪 Sign Out</button>
-      </form>
-    <% } else { %>
-      <a href="/auth/sign-in">🔑 Sign In</a>
-    <% } %>
-  </div>
-</nav>
+    <div class="right">
+      <% if (user) { %>
+        <span>Hi, <%= user.username %>!</span>
+      <% } %>
+    </div>
+  </nav>
 
+  <!-- Forma za editovanje rada -->
+  <div class="container">
+    <h1>Uredi rad</h1>
+    <form action="/artworks/<%= artwork._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      <label>Naslov:</label>
+      <input type="text" name="title" value="<%= artwork.title %>" required>
 
+      <label>Umetnik:</label>
+      <input type="text" name="artist" value="<%= artwork.artist %>">
 
-      <div>
-        <label for="image">Change Image</label>
-        <input type="file" name="image" id="image" accept="image/*">
-        <% if (artwork.imagePath) { %>
-          <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
-        <% } %>
-      </div>
+      <label>Opis:</label>
+      <textarea name="description"><%= artwork.description %></textarea>
 
-      <button type="submit">Update Artwork</button>
+      <% if (artwork.imagePath) { %>
+        <p>Trenutna slika:</p>
+        <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
+      <% } %>
+
+      <label>Nova slika (opciono):</label>
+      <input type="file" name="image">
+
+      <button type="submit">Ažuriraj rad</button>
     </form>
+
+    <a href="/artworks/<%= artwork._id %>">Nazad na rad</a>
   </div>
 
 </body>

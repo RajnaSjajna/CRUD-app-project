@@ -208,14 +208,15 @@
           <div class="art-image">
             <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
             
-            <% if (user && user.username === artwork.artist) { %>
-              <div class="actions">
-                <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
-                <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE" style="display:inline;">
-                  <button type="submit">🗑️ Delete</button>
-                </form>
-              </div>
-            <% } %>
+            <% if (user && artwork.ownerId.equals(user._id)) { %>
+  <div class="actions">
+    <a href="/artworks/<%= artwork._id %>/edit">✏️ Edit</a>
+    <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE" style="display:inline;">
+      <button type="submit">🗑️ Delete</button>
+    </form>
+  </div>
+<% } %>
+
           </div>
 
           <!-- Opis desno -->

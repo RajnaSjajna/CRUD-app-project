@@ -132,7 +132,7 @@
 
   <!-- ===== UPLOAD FORM ===== -->
   <div class="container">
-    <h2>Add New Artwork</h2>
+    <h1>Add New Artwork</h1>
     <form method="POST" action="/artworks" enctype="multipart/form-data">
       <div>
         <label for="title">Title</label>
@@ -145,13 +145,14 @@
       </div>
 
       <div>
-        <label for="description">Description</label>
-        <textarea name="description" id="description" rows="4"></textarea>
+
+        <label for="description">Description</label> <textarea name="description" id="description" rows="4"></textarea>
       </div>
 
       <div>
         <label for="image">Upload Image</label>
         <input type="file" name="image" id="image" accept="image/*" required>
+
       </div>
 
       <button type="submit">Upload Picture</button>

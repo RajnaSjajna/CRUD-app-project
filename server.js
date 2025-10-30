@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import 'dotenv/config';
 import express from 'express';
+import methodOverride from "method-override";
 import path from 'path';
 import session from 'express-session';
 import artworksRouter from './controllers/artworks.js';
@@ -18,6 +19,8 @@ const app = express();
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+// Aktivira method-override
+app.use(methodOverride("_method"));
 
 app.use(session({
   secret: 'fineart-secret',
@@ -47,6 +50,9 @@ app.use('/auth', authRouter);
 app.get('/', (req, res) => {
   res.render('index');
 });
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

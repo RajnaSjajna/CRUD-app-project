@@ -1,54 +1,19 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= artwork.title %> | FineArt Gallery</title>
-  <link rel="stylesheet" href="/css/style.css">
-  </head>
-<body>
+<h1><%= artwork.title %></h1>
+<p><strong>Umetnik:</strong> <%= artwork.artist %></p>
+<p><strong>Opis:</strong> <%= artwork.description %></p>
 
-  <nav class="navbar">
-    <div class="left">
-      <a href="/artworks">🏠 Home</a>
-    </div>
+<% if (artwork.imagePath) { %>
+  <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>" width="300">
+<% } %>
 
-    <div class="right">
-      <% if (user) { %>
-        <span>Hi, <%= user.username %>!</span>
-        <form method="POST" action="/auth/sign-out" style="display:inline;">
-          <button type="submit">🚪 Sign Out</button>
-        </form>
-      <% } else { %>
-        <a href="/auth/sign-in">🔑 Sign In</a>
-      <% } %>
-    </div>
-  </nav>
+<% if (user && artwork.ownerId.equals(user._id)) { %>
+  <p>
+    <a href="/artworks/<%= artwork._id %>/edit">Uredi</a>
+    |
+    <form action="/artworks/<%= artwork._id %>?_method=DELETE" method="POST" style="display:inline;">
+      <button type="submit">Obriši</button>
+    </form>
+  </p>
+<% } %>
 
-  <div class="container">
-    <div class="art-image">
-      <% if (artwork.imagePath) { %>
-        <img src="<%= artwork.imagePath %>" alt="<%= artwork.title %>">
-      <% } %>
-
-      <% if (user && user._id.toString() === artwork.ownerId.toString()) { %>
-        <div class="card-buttons">
-          <a href="/artworks/<%= artwork._id %>/edit">Edit</a>
-          <form method="POST" action="/artworks/<%= artwork._id %>?_method=DELETE">
-            <button type="submit">Delete</button>
-          </form>
-        </div>
-      <% } %>
-    </div>
-
-    <div class="art-details">
-      <h2><%= artwork.title %></h2>
-      <p><strong>Artist:</strong> <%= artwork.artist %></p>
-      <p><%= artwork.description %></p>
-    </div>
-  </div>
-
-  <a class="back-link" href="/artworks">⬅ Back to Artworks</a>
-
-</body>
-</html> -->
+<a href="/artworks">Nazad na listu radova</a>
