@@ -2,13 +2,11 @@ import express from "express";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 
-
-
 const router = express.Router();
 
 // =======================
 // GET /auth/sign-up
-// Prikaz forme za registraciju
+// Forma za registraciju
 // =======================
 router.get("/sign-up", (req, res) => {
   res.render("auth/sign-up");
@@ -24,23 +22,18 @@ router.post("/sign-up", async (req, res) => {
 
     // Provjeri da li korisnik već postoji
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-
     if (existingUser) {
       return res.send("Korisnik sa tim username-om ili email-om već postoji.");
     }
 
-
-
     // Hash lozinke
-const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-
-
-    // Kreiraj korisnika
+    // Kreiraj novog korisnika (koristi hash!)
     const newUser = new User({
       username,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await newUser.save();
@@ -50,8 +43,10 @@ const hashedPassword = await bcrypt.hash(password, 10);
     req.session.user = {
       username: newUser.username,
       email: newUser.email,
+      _id: newUser._id,
     };
 
+    // Idi na stranicu sa svim umetnicima
     res.redirect("/artworks");
   } catch (err) {
     console.error(err);
@@ -75,27 +70,27 @@ router.post("/sign-in", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Pronađi korisnika po username-u
+    // Pronađi korisnika
     const user = await User.findOne({ username });
-    if (!user) return res.send("Username or password is incorrect!");
+    if (!user) return res.send("Username ili lozinka nisu ispravni!");
 
     // Provjeri lozinku
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.send("Neispravan username ili password");
+    if (!isMatch) return res.send("Username ili lozinka nisu ispravni!");
 
     // Spremi u session
     req.session.userId = user._id;
     req.session.user = {
       username: user.username,
+      email: user.email,
       _id: user._id,
-      email: user.email
-      
     };
 
+    // Idi na stranicu sa svim umetnicima
     res.redirect("/artworks");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Greška pri login-u");
+    res.status(500).send("Greška pri loginu");
   }
 });
 
